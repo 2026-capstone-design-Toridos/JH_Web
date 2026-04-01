@@ -12,6 +12,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class QnaService {
 
     private final ProductQnaRepository qnaRepository;

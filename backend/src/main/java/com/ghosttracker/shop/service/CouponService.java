@@ -13,6 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CouponService {
 
     private final CouponRepository couponRepository;
