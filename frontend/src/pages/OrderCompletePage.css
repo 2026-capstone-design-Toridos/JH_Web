@@ -1,0 +1,22 @@
+.order-complete {
+  min-height: calc(100vh - var(--header-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.order-complete__card {
+  text-align: center;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 60px 48px;
+  box-shadow: var(--shadow-md);
+  max-width: 480px;
+  width: 100%;
+}
+.order-complete__icon { font-size: 4rem; margin-bottom: 16px; }
+.order-complete__card h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
+.order-complete__number { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; }
+.order-complete__number strong { color: var(--text); }
+.order-complete__desc { color: var(--text-light); line-height: 1.7; margin-bottom: 32px; }
+.order-complete__actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }

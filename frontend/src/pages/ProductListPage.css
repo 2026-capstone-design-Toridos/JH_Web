@@ -1,0 +1,74 @@
+.product-list-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.product-list__sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 20px);
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.sidebar__section { margin-bottom: 28px; }
+.sidebar__section:last-child { margin-bottom: 0; }
+.sidebar__section h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.sidebar__section ul { display: flex; flex-direction: column; gap: 2px; }
+.sidebar__section button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sidebar__section button:hover { background: var(--bg); color: var(--text); }
+.sidebar__section button.active { background: var(--primary); color: #fff; font-weight: 600; }
+
+.product-list__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.product-list__count { font-size: 0.9rem; color: var(--text-light); }
+.product-list__count strong { color: var(--text); font-weight: 700; }
+
+.product-list__sort {
+  display: flex;
+  gap: 4px;
+}
+.product-list__sort button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.product-list__sort button.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+.product-list__sort button:hover:not(.active) { border-color: var(--text-light); color: var(--text); }
+
+@media (max-width: 768px) {
+  .product-list-layout { grid-template-columns: 1fr; }
+  .product-list__sidebar { position: static; }
+}
