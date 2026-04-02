@@ -13,7 +13,7 @@ const COLORS = ['블랙', '화이트', '네이비', '베이지', '그레이', '�
 export default function ProductDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const { fetchCart } = useCart();
+  const { fetchCart, addGuestItem } = useCart();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
@@ -56,11 +56,14 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = async () => {
-    if (!user) { navigate('/login'); return; }
     setAddingToCart(true);
     try {
-      await addCartItem({ productId: parseInt(id), quantity, selectedSize, selectedColor });
-      await fetchCart();
+      if (user) {
+        await addCartItem({ productId: parseInt(id), quantity, selectedSize, selectedColor });
+        await fetchCart();
+      } else {
+        addGuestItem(product, quantity, selectedSize, selectedColor);
+      }
       showToast('장바구니에 담았습니다!');
     } catch (e) {
       showToast(e.response?.data?.message || '오류가 발생했습니다.');
@@ -70,10 +73,13 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = async () => {
-    if (!user) { navigate('/login'); return; }
     try {
-      await addCartItem({ productId: parseInt(id), quantity, selectedSize, selectedColor });
-      await fetchCart();
+      if (user) {
+        await addCartItem({ productId: parseInt(id), quantity, selectedSize, selectedColor });
+        await fetchCart();
+      } else {
+        addGuestItem(product, quantity, selectedSize, selectedColor);
+      }
       navigate('/cart');
     } catch (e) {
       showToast(e.response?.data?.message || '오류가 발생했습니다.');

@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createOrder } from '../api/orders';
+import { createOrder, createGuestOrder } from '../api/orders';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './CheckoutPage.css';
 
 export default function CheckoutPage() {
-  const { cart, fetchCart } = useCart();
+  const { cart, fetchCart, isGuest, clearGuestCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    // Guest info (only shown for non-logged-in users)
+    guestEmail: '',
+    guestName: '',
+    guestPhone: '',
+    // Shipping info
     receiverName: user?.name || '',
     receiverPhone: user?.phone || '',
     zipCode: user?.zipCode || '',
@@ -30,15 +35,52 @@ export default function CheckoutPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validate guest info
+    if (isGuest) {
+      if (!form.guestEmail || !form.guestName || !form.guestPhone) {
+        setError('주문자 정보를 모두 입력해주세요.');
+        return;
+      }
+    }
     if (!form.receiverName || !form.receiverPhone || !form.shippingAddress || !form.zipCode) {
       setError('배송지 정보를 모두 입력해주세요.');
       return;
     }
+
     setLoading(true);
     try {
-      const res = await createOrder(form);
-      await fetchCart();
-      navigate(`/orders/${res.data.orderNumber}`, { state: { success: true } });
+      let res;
+      if (isGuest) {
+        // Guest order: send items from localStorage cart
+        const guestData = {
+          guestEmail: form.guestEmail,
+          guestName: form.guestName,
+          guestPhone: form.guestPhone,
+          receiverName: form.receiverName,
+          receiverPhone: form.receiverPhone,
+          zipCode: form.zipCode,
+          shippingAddress: form.shippingAddress,
+          shippingAddressDetail: form.shippingAddressDetail,
+          deliveryRequest: form.deliveryRequest,
+          paymentMethod: form.paymentMethod,
+          items: cart.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            selectedSize: item.selectedSize || '',
+            selectedColor: item.selectedColor || '',
+          })),
+        };
+        res = await createGuestOrder(guestData);
+        clearGuestCart();
+        navigate(`/orders/complete`, {
+          state: { orderNumber: res.data.orderNumber, guestEmail: form.guestEmail, isGuest: true }
+        });
+      } else {
+        res = await createOrder(form);
+        await fetchCart();
+        navigate(`/orders/${res.data.orderNumber}`, { state: { success: true } });
+      }
     } catch (e) {
       setError(e.response?.data?.message || '주문 처리 중 오류가 발생했습니다.');
     } finally {
@@ -52,6 +94,31 @@ export default function CheckoutPage() {
         <h1 className="checkout__title">주문하기</h1>
         <form className="checkout__layout" onSubmit={handleSubmit}>
           <div className="checkout__left">
+            {/* Guest Info (only for non-logged-in) */}
+            {isGuest && (
+              <div className="checkout__section">
+                <h2>주문자 정보</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 16 }}>
+                  비회원 주문입니다. 주문 조회 시 이메일이 필요합니다.
+                </p>
+                <div className="form-group">
+                  <label className="form-label">이메일 *</label>
+                  <input className="form-input" type="email" value={form.guestEmail}
+                    onChange={set('guestEmail')} placeholder="order@example.com" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">이름 *</label>
+                  <input className="form-input" value={form.guestName}
+                    onChange={set('guestName')} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">연락처 *</label>
+                  <input className="form-input" value={form.guestPhone}
+                    onChange={set('guestPhone')} placeholder="010-0000-0000" required />
+                </div>
+              </div>
+            )}
+
             {/* Shipping */}
             <div className="checkout__section">
               <h2>배송지 정보</h2>

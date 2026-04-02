@@ -62,6 +62,16 @@ public class Order {
     @Column(length = 200)
     private String deliveryRequest;
 
+    // Guest order info (null for member orders)
+    @Column(length = 100)
+    private String guestEmail;
+
+    @Column(length = 50)
+    private String guestName;
+
+    @Column(length = 20)
+    private String guestPhone;
+
     // Payment info
     @Enumerated(EnumType.STRING)
     @Builder.Default

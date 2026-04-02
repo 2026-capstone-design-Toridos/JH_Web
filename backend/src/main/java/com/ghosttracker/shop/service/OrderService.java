@@ -1,6 +1,7 @@
 package com.ghosttracker.shop.service;
 
 import com.ghosttracker.shop.dto.order.CreateOrderRequest;
+import com.ghosttracker.shop.dto.order.GuestOrderRequest;
 import com.ghosttracker.shop.dto.order.OrderResponse;
 import com.ghosttracker.shop.entity.*;
 import com.ghosttracker.shop.repository.*;
@@ -25,6 +26,7 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     private static final BigDecimal FREE_SHIPPING_THRESHOLD = BigDecimal.valueOf(50000);
     private static final BigDecimal SHIPPING_FEE = BigDecimal.valueOf(3000);
@@ -104,6 +106,81 @@ public class OrderService {
         cartItemRepository.deleteByCart(cart);
         cartRepository.save(cart);
 
+        return OrderResponse.from(order);
+    }
+
+    @Transactional
+    public OrderResponse createGuestOrder(GuestOrderRequest req) {
+        if (req.getItems() == null || req.getItems().isEmpty()) {
+            throw new IllegalStateException("주문 상품이 없습니다.");
+        }
+
+        Order.PaymentMethod paymentMethod = Order.PaymentMethod.MOCK;
+        if (req.getPaymentMethod() != null) {
+            try { paymentMethod = Order.PaymentMethod.valueOf(req.getPaymentMethod()); }
+            catch (Exception ignored) {}
+        }
+
+        Order order = Order.builder()
+                .orderNumber(generateOrderNumber())
+                .user(null)
+                .guestEmail(req.getGuestEmail())
+                .guestName(req.getGuestName())
+                .guestPhone(req.getGuestPhone())
+                .status(Order.OrderStatus.PAID)
+                .receiverName(req.getReceiverName())
+                .receiverPhone(req.getReceiverPhone())
+                .shippingAddress(req.getShippingAddress())
+                .shippingAddressDetail(req.getShippingAddressDetail())
+                .zipCode(req.getZipCode())
+                .deliveryRequest(req.getDeliveryRequest())
+                .paymentMethod(paymentMethod)
+                .totalAmount(BigDecimal.ZERO)
+                .shippingFee(BigDecimal.ZERO)
+                .build();
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (GuestOrderRequest.GuestOrderItem guestItem : req.getItems()) {
+            Product product = productRepository.findById(guestItem.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. ID: " + guestItem.getProductId()));
+
+            if (product.getStock() < guestItem.getQuantity()) {
+                throw new IllegalStateException(product.getName() + " 상품의 재고가 부족합니다.");
+            }
+            product.setStock(product.getStock() - guestItem.getQuantity());
+
+            BigDecimal unitPrice = product.getDiscountPrice() != null
+                    ? product.getDiscountPrice() : product.getPrice();
+
+            total = total.add(unitPrice.multiply(BigDecimal.valueOf(guestItem.getQuantity())));
+
+            OrderItem orderItem = OrderItem.builder()
+                    .order(order)
+                    .product(product)
+                    .productName(product.getName())
+                    .price(unitPrice)
+                    .quantity(guestItem.getQuantity())
+                    .selectedSize(guestItem.getSelectedSize())
+                    .selectedColor(guestItem.getSelectedColor())
+                    .productImage(product.getMainImage())
+                    .build();
+            order.getItems().add(orderItem);
+        }
+
+        BigDecimal shippingFee = total.compareTo(FREE_SHIPPING_THRESHOLD) >= 0
+                ? BigDecimal.ZERO : SHIPPING_FEE;
+
+        order.setTotalAmount(total.add(shippingFee));
+        order.setShippingFee(shippingFee);
+
+        orderRepository.save(order);
+        return OrderResponse.from(order);
+    }
+
+    public OrderResponse getGuestOrderDetail(String orderNumber, String email) {
+        Order order = orderRepository.findByOrderNumberAndGuestEmail(orderNumber, email)
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
         return OrderResponse.from(order);
     }
 

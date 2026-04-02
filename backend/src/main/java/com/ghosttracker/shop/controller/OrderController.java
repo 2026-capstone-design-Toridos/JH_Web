@@ -1,6 +1,7 @@
 package com.ghosttracker.shop.controller;
 
 import com.ghosttracker.shop.dto.order.CreateOrderRequest;
+import com.ghosttracker.shop.dto.order.GuestOrderRequest;
 import com.ghosttracker.shop.dto.order.OrderResponse;
 import com.ghosttracker.shop.service.OrderService;
 import jakarta.validation.Valid;
@@ -45,6 +46,21 @@ public class OrderController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable String orderNumber) {
         return ResponseEntity.ok(orderService.getOrderDetail(userDetails.getUsername(), orderNumber));
+    }
+
+    // ── Guest order endpoints ──
+
+    @PostMapping("/guest")
+    public ResponseEntity<OrderResponse> createGuestOrder(
+            @Valid @RequestBody GuestOrderRequest req) {
+        return ResponseEntity.ok(orderService.createGuestOrder(req));
+    }
+
+    @GetMapping("/guest/{orderNumber}")
+    public ResponseEntity<OrderResponse> getGuestOrderDetail(
+            @PathVariable String orderNumber,
+            @RequestParam String email) {
+        return ResponseEntity.ok(orderService.getGuestOrderDetail(orderNumber, email));
     }
 
     @PostMapping("/{orderNumber}/cancel")

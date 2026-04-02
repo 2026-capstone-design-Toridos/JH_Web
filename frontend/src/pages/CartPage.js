@@ -5,15 +5,19 @@ import { useCart } from '../context/CartContext';
 import './CartPage.css';
 
 export default function CartPage() {
-  const { cart, fetchCart } = useCart();
+  const { cart, fetchCart, isGuest, updateGuestItem, removeGuestItem } = useCart();
   const navigate = useNavigate();
   const [updating, setUpdating] = useState(null);
 
   const handleQtyChange = async (itemId, quantity) => {
     setUpdating(itemId);
     try {
-      await updateCartItem(itemId, quantity);
-      await fetchCart();
+      if (isGuest) {
+        updateGuestItem(itemId, quantity);
+      } else {
+        await updateCartItem(itemId, quantity);
+        await fetchCart();
+      }
     } catch {}
     setUpdating(null);
   };
@@ -21,8 +25,12 @@ export default function CartPage() {
   const handleRemove = async (itemId) => {
     setUpdating(itemId);
     try {
-      await removeCartItem(itemId);
-      await fetchCart();
+      if (isGuest) {
+        removeGuestItem(itemId);
+      } else {
+        await removeCartItem(itemId);
+        await fetchCart();
+      }
     } catch {}
     setUpdating(null);
   };
@@ -75,7 +83,7 @@ export default function CartPage() {
                           disabled={item.quantity <= 1 || updating === item.id}>-</button>
                         <span>{item.quantity}</span>
                         <button onClick={() => handleQtyChange(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= item.stock || updating === item.id}>+</button>
+                          disabled={updating === item.id}>+</button>
                       </div>
                       <div className="cart-item__price">
                         {(unitPrice * item.quantity).toLocaleString()}원

@@ -59,8 +59,9 @@ export default function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/products" element={<ProductListPage />} />
                   <Route path="/products/:id" element={<ProductDetailPage />} />
-                  <Route path="/cart" element={<PrivateRoute><CartPage /></PrivateRoute>} />
-                  <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/orders/complete" element={<OrderCompletePage />} />
                   <Route path="/orders/:orderNumber" element={<PrivateRoute><OrderCompletePage /></PrivateRoute>} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/mypage" element={<PrivateRoute><MyPage /></PrivateRoute>} />
