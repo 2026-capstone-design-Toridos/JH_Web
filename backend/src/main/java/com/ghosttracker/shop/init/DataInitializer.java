@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -361,15 +361,15 @@ public class DataInitializer implements CommandLineRunner {
             Coupon.builder().code("WELCOME10").name("신규가입 10% 할인")
                 .discountType(Coupon.DiscountType.PERCENT).discountValue(BigDecimal.valueOf(10))
                 .minOrderAmount(BigDecimal.valueOf(30000)).maxUses(9999)
-                .expiryDate(LocalDate.of(2027, 12, 31)).build(),
+                .expiryDate(LocalDateTime.of(2027, 12, 31, 23, 59, 59)).build(),
             Coupon.builder().code("SAVE5000").name("5,000원 할인쿠폰")
                 .discountType(Coupon.DiscountType.FIXED).discountValue(BigDecimal.valueOf(5000))
                 .minOrderAmount(BigDecimal.valueOf(50000)).maxUses(9999)
-                .expiryDate(LocalDate.of(2027, 12, 31)).build(),
+                .expiryDate(LocalDateTime.of(2027, 12, 31, 23, 59, 59)).build(),
             Coupon.builder().code("SUMMER20").name("여름맞이 20% 할인")
                 .discountType(Coupon.DiscountType.PERCENT).discountValue(BigDecimal.valueOf(20))
                 .minOrderAmount(BigDecimal.valueOf(80000)).maxUses(500)
-                .expiryDate(LocalDate.of(2026, 9, 30)).build()
+                .expiryDate(LocalDateTime.of(2026, 9, 30, 23, 59, 59)).build()
         );
         couponRepository.saveAll(coupons);
         log.info("Coupons initialized. Codes: WELCOME10, SAVE5000, SUMMER20");
