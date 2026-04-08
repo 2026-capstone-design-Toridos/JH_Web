@@ -176,6 +176,7 @@ function _dispatch(eventType, data, timestamp) {
     data,
   };
 
+  console.debug('[GhostTracker]', eventType, event);
   send(event);
   return _seq;
 }
