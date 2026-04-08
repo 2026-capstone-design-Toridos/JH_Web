@@ -52,7 +52,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="page-content">
+    <div className="page-content" data-section="cart">
       <div className="container">
         <h1 className="cart__title">장바구니</h1>
         <div className="cart__layout">
@@ -88,7 +88,12 @@ export default function CartPage() {
                       <div className="cart-item__price">
                         {(unitPrice * item.quantity).toLocaleString()}원
                       </div>
-                      <button className="cart-item__remove" onClick={() => handleRemove(item.id)}>✕</button>
+                      <button
+                        className="cart-item__remove"
+                        data-ghost-role="remove-from-cart"
+                        data-product-id={item.productId}
+                        onClick={() => handleRemove(item.id)}
+                      >✕</button>
                     </div>
                   </div>
                 </div>
@@ -119,6 +124,7 @@ export default function CartPage() {
             </div>
             <button
               className="btn btn-primary btn-full btn-lg"
+              data-ghost-role="purchase-btn"
               onClick={() => navigate('/checkout')}
             >
               주문하기 ({cart.totalCount}개)

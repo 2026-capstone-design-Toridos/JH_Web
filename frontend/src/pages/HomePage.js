@@ -10,7 +10,13 @@ function ProductCard({ product }) {
     ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
 
   return (
-    <div className="product-card" onClick={() => navigate(`/products/${product.id}`)}>
+    <div
+      className="product-card"
+      data-ghost-role="product-card"
+      data-product-id={product.id}
+      data-product-name={product.name}
+      onClick={() => navigate(`/products/${product.id}`)}
+    >
       <div className="product-card__img">
         <img src={product.mainImage || 'https://via.placeholder.com/300x400?text=No+Image'} alt={product.name} />
         {hasDiscount && <span className="product-card__badge">-{discountRate}%</span>}
@@ -52,7 +58,7 @@ export default function HomePage() {
   return (
     <div className="home">
       {/* Hero */}
-      <section className="hero">
+      <section className="hero" data-section="hero">
         <div className="hero__content">
           <p className="hero__sub">NEW COLLECTION 2025</p>
           <h1 className="hero__title">트렌드를<br />입다</h1>
@@ -78,7 +84,7 @@ export default function HomePage() {
       </section>
 
       {/* New Arrivals */}
-      <section className="section container">
+      <section className="section container" data-section="new-arrivals">
         <div className="home__section-header">
           <div>
             <h2 className="section-title">신상품</h2>
@@ -104,7 +110,7 @@ export default function HomePage() {
       </section>
 
       {/* Best Sellers */}
-      <section className="section container">
+      <section className="section container" data-section="best-sellers">
         <div className="home__section-header">
           <div>
             <h2 className="section-title">베스트셀러</h2>

@@ -137,9 +137,9 @@ export default function ProductDetailPage() {
           <span>{product.name}</span>
         </div>
 
-        <div className="product-detail">
+        <div className="product-detail" data-section="product-detail" data-product-id={product.id}>
           {/* Images */}
-          <div className="product-detail__images">
+          <div className="product-detail__images" data-subsection="product-images">
             <div className="product-detail__main-img">
               <img src={allImages[selectedImage] || 'https://via.placeholder.com/500x600?text=No+Image'} alt={product.name} />
               {hasDiscount && <span className="product-card__badge">-{discountRate}%</span>}
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Info */}
-          <div className="product-detail__info">
+          <div className="product-detail__info" data-subsection="product-info">
             <div className="product-detail__brand">{product.brand}</div>
             <h1 className="product-detail__name">{product.name}</h1>
 
@@ -237,6 +237,9 @@ export default function ProductDetailPage() {
             <div className="product-detail__actions">
               <button
                 className="btn btn-outline btn-full"
+                data-ghost-role="add-to-cart"
+                data-product-id={product.id}
+                data-product-name={product.name}
                 onClick={handleAddToCart}
                 disabled={addingToCart || product.stock === 0}
               >
@@ -244,6 +247,8 @@ export default function ProductDetailPage() {
               </button>
               <button
                 className="btn btn-primary btn-full btn-lg"
+                data-ghost-role="purchase-btn"
+                data-product-id={product.id}
                 onClick={handleBuyNow}
                 disabled={product.stock === 0}
               >바로 구매</button>
@@ -259,7 +264,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Tabs */}
-        <div className="product-tabs">
+        <div className="product-tabs" data-section="product-tabs">
           <div className="product-tabs__nav">
             {[
               { key: 'desc', label: '상품 설명' },
@@ -276,13 +281,13 @@ export default function ProductDetailPage() {
 
           <div className="product-tabs__content">
             {activeTab === 'desc' && (
-              <div className="product-desc">
+              <div className="product-desc" data-subsection="product-desc">
                 <p style={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>{product.description || '상품 설명이 없습니다.'}</p>
               </div>
             )}
 
             {activeTab === 'review' && (
-              <div className="product-reviews">
+              <div className="product-reviews" data-subsection="product-reviews">
                 {/* Review form */}
                 {user && (
                   <form className="review-form" onSubmit={handleReviewSubmit}>

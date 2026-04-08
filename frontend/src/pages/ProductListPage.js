@@ -9,7 +9,13 @@ function ProductCard({ product }) {
   const discountRate = hasDiscount
     ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
   return (
-    <div className="product-card" onClick={() => navigate(`/products/${product.id}`)}>
+    <div
+      className="product-card"
+      data-ghost-role="product-card"
+      data-product-id={product.id}
+      data-product-name={product.name}
+      onClick={() => navigate(`/products/${product.id}`)}
+    >
       <div className="product-card__img">
         <img src={product.mainImage || 'https://via.placeholder.com/300x400?text=No+Image'} alt={product.name} />
         {hasDiscount && <span className="product-card__badge">-{discountRate}%</span>}
@@ -124,7 +130,7 @@ export default function ProductListPage() {
           </aside>
 
           {/* Main */}
-          <main className="product-list__main">
+          <main className="product-list__main" data-section="product-list">
             {/* Header bar */}
             <div className="product-list__bar">
               <span className="product-list__count">총 <strong>{totalElements}</strong>개</span>

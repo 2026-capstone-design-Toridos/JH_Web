@@ -89,7 +89,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content" data-section="checkout">
       <div className="container">
         <h1 className="checkout__title">주문하기</h1>
         <form className="checkout__layout" onSubmit={handleSubmit}>
@@ -231,7 +231,7 @@ export default function CheckoutPage() {
 
               {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
 
-              <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}
+              <button type="submit" className="btn btn-primary btn-full btn-lg" data-ghost-role="purchase-btn" disabled={loading}
                 style={{ marginTop: 20 }}>
                 {loading ? '처리 중...' : `${finalTotal.toLocaleString()}원 결제하기`}
               </button>
