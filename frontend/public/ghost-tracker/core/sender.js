@@ -16,7 +16,7 @@
  * ────────────────────────────────────────────────────────────────
  */
 
-const COLLECT_URL    = '/collect';
+const COLLECT_URL    = '';  // 백엔드 엔드포인트 확정 후 URL 입력
 const FLUSH_INTERVAL = 5_000; // 5초마다 자동 플러시
 const MAX_BUFFER_SIZE = 30;   // 버퍼 최대 크기 (초과 시 즉시 플러시)
 
@@ -51,7 +51,7 @@ function flush(isUnload = false) {
   clearTimeout(_flushTimer);
   _flushTimer = null;
 
-  if (_buffer.length === 0) return;
+  if (!COLLECT_URL || _buffer.length === 0) return;
 
   const payload = JSON.stringify({ events: _buffer });
   _buffer = [];
