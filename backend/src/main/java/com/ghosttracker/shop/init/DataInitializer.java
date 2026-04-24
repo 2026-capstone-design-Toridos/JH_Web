@@ -54,18 +54,11 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initProducts() {
-        // DATA_VERSION 기반으로 재시드 판단
+        // 상품이 하나라도 있으면 스킵 (FK 제약 위반 방지)
         long count = productRepository.count();
-        if (count > 0 && count >= 30) {
-            // 이미 최신 데이터 존재 — 첫 번째 상품의 설명 길이로 판단
-            Product first = productRepository.findAll().get(0);
-            if (first.getDescription() != null && first.getDescription().length() > 200) {
-                log.info("Products already seeded with v{} data ({} items). Skipping.", DATA_VERSION, count);
-                return;
-            }
-            // 구버전 데이터 → 삭제 후 재시드
-            log.info("Re-seeding products with v{} data...", DATA_VERSION);
-            productRepository.deleteAll();
+        if (count > 0) {
+            log.info("Products already exist ({} items). Skipping seed.", count);
+            return;
         }
 
         Category tops       = categoryRepository.findBySlug("tops").orElseThrow();
